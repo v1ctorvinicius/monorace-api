@@ -1,10 +1,13 @@
 import { Router } from "express";
 
-import PlayerController from "../controller/PlayerController";
+import { playerController } from "../controller/PlayerController";
+import { authController } from "../controller/AuthController";
 
 const router: Router = Router();
 
-const playerController = PlayerController.getInstance();
 router.get("/players", playerController.getPlayers);
+
+router.get("/auth/:username/:password", authController.login);
+router.get("/auth/:username", authController.usernameExists);
 
 export { router };

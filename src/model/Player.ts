@@ -1,4 +1,5 @@
 export default class Player {
+  [x: string]: any;
   private _id: number;
   private _username: string;
 
