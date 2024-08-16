@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { playerService } from "../service/PlayerService";
 
 class PlayerController {
   public static instance: PlayerController;

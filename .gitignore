@@ -30,3 +30,5 @@ tsconfig.*.json
 # Editor-specific files
 *.swp
 *.swo
+
+readme.md

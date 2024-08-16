@@ -1,22 +1,23 @@
+import { authenticateUser } from "./adapters/in/http/controllers/AuthController";
+
 import express from "express";
-import { router } from "./route/router";
 const cors = require("cors");
 
-const dotenv = require("dotenv").config();
+// const dotenv = require("dotenv").config();
 const port = process.env.PORT;
 
 class App {
   public server: express.Application;
 
+  private routes() {
+    this.server.get("/login", authenticateUser);
+  }
+
   constructor() {
     this.server = express();
     this.server.use(cors());
     this.middleware();
-    this.router();
-  }
-
-  private router() {
-    this.server.use(router);
+    this.routes();
   }
 
   private middleware() {
