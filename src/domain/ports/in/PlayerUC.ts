@@ -1,6 +1,7 @@
 import { Player } from "@/domain/models/Player";
 
 export default interface PlayerUC {
+  createPlayer(player: Player): Promise<Player>;
   getPlayerById(playerId: string): Promise<Player>;
   getPlayerByUsername(username: string): Promise<Player>;
   getPlayerByEmail(email: string): Promise<Player>;

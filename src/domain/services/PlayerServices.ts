@@ -4,37 +4,33 @@ import PlayerRepository from "../repositories/PlayerRepository";
 import {
   findPlayerById,
   findPlayerByEmail,
+  createPlayer,
 } from "@/adapters/out/db/PlayerRepositoryRedisImpl";
 
-export async function getPlayerByIdService(id: string): Promise<Player> {
-  const player = await findPlayerById(id)
-    .then((response) => {
-      // console.log("response: ", response);
-      return response;
-    })
-    .catch((err) => {
-      console.log("erro: ", err);
-    })
-    .finally(() => {
-      console.log("acabou");
-    });
-
-  return player!;
+export async function getPlayerByIdService(id: string): Promise<Player | null> {
+  const player = await findPlayerById(id);
+  console.log("player: ", player);
+  
+  return player;
 }
 
 export function getPlayerByEmailService(email: string): Player {
-  // const data = findPlayerByEmail(email);
-  // data.then(() => {
-  //   console.log("data: ", data);
-  // });
-  // if (!data) {
   throw new Error("not implemented");
-  // }
-  // const player = new Player("COISO", "", email, "", "");
-  // return player;
+}
+
+export async function createPlayerService(
+  request: any
+): Promise<Player | null> {
+  const player = Player.create(request.username, request.email);
+  if (!player) return null;
+  const newPlayer = await createPlayer(player);
+  return newPlayer;
 }
 
 class PlayerServices implements PlayerUC {
+  createPlayer(player: Player): Promise<Player> {
+    throw new Error("Method not implemented.");
+  }
   getPlayerById(playerId: string): Promise<Player> {
     throw new Error("Method not implemented.");
   }

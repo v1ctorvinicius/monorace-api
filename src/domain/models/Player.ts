@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export class Player {
   private id: string;
   private username: string;
@@ -81,7 +83,7 @@ export class Player {
 
   static create(username: string, email: string) {
     return new Player(
-      "no-id", // id
+      uuidv4(), // id gerado automaticamente
       username, // username
       email, // email
       "no avatar", // avatarUrl
@@ -107,6 +109,202 @@ export class Player {
       {}, // customizations
       0 // coins
     );
+  }
+
+  getId(): string {
+    return this.id;
+  }
+
+  getUsername(): string {
+    return this.username;
+  }
+
+  setUsername(username: string) {
+    this.username = username;
+  }
+
+  getEmail(): string {
+    return this.email;
+  }
+
+  setEmail(email: string) {
+    this.email = email;
+  }
+
+  getAvatarUrl(): string {
+    return this.avatarUrl;
+  }
+
+  setAvatarUrl(avatarUrl: string) {
+    this.avatarUrl = avatarUrl;
+  }
+
+  getRank(): string {
+    return this.rank;
+  }
+
+  setRank(rank: string) {
+    this.rank = rank;
+  }
+
+  getLevel(): number {
+    return this.level;
+  }
+
+  setLevel(level: number) {
+    this.level = level;
+  }
+
+  getExperience(): number {
+    return this.experience;
+  }
+
+  setExperience(experience: number) {
+    this.experience = experience;
+  }
+
+  getScore(): number {
+    return this.score;
+  }
+
+  setScore(score: number) {
+    this.score = score;
+  }
+
+  getTrophies(): string[] {
+    return this.trophies;
+  }
+
+  setTrophies(trophies: string[]) {
+    this.trophies = trophies;
+  }
+
+  getCompletedRaces(): number {
+    return this.completedRaces;
+  }
+
+  setCompletedRaces(completedRaces: number) {
+    this.completedRaces = completedRaces;
+  }
+
+  getAchievements(): string[] {
+    return this.achievements;
+  }
+
+  setAchievements(achievements: string[]) {
+    this.achievements = achievements;
+  }
+
+  getInventory(): object[] {
+    return this.inventory;
+  }
+
+  setInventory(inventory: object[]) {
+    this.inventory = inventory;
+  }
+
+  getPreferredCar(): string {
+    return this.preferredCar;
+  }
+
+  setPreferredCar(preferredCar: string) {
+    this.preferredCar = preferredCar;
+  }
+
+  getSettings(): object {
+    return this.settings;
+  }
+
+  setSettings(settings: object) {
+    this.settings = settings;
+  }
+
+  getEventsParticipated(): Set<string> {
+    return this.eventsParticipated;
+  }
+
+  setEventsParticipated(eventsParticipated: Set<string>) {
+    this.eventsParticipated = eventsParticipated;
+  }
+
+  getFriends(): Set<number> {
+    return this.friends;
+  }
+
+  setFriends(friends: Set<number>) {
+    this.friends = friends;
+  }
+
+  getCurrentRace(): string | undefined {
+    return this.currentRace;
+  }
+
+  setCurrentRace(currentRace: string) {
+    this.currentRace = currentRace;
+  }
+
+  getBestLapTime(): number | null {
+    return this.bestLapTime;
+  }
+
+  setBestLapTime(bestLapTime: number | null) {
+    this.bestLapTime = bestLapTime;
+  }
+
+  getTotalRaces(): number {
+    return this.totalRaces;
+  }
+
+  setTotalRaces(totalRaces: number) {
+    this.totalRaces = totalRaces;
+  }
+
+  getTotalWins(): number {
+    return this.totalWins;
+  }
+
+  setTotalWins(totalWins: number) {
+    this.totalWins = totalWins;
+  }
+
+  getCurrentEvents(): Set<number> {
+    return this.currentEvents;
+  }
+
+  setCurrentEvents(currentEvents: Set<number>) {
+    this.currentEvents = currentEvents;
+  }
+
+  getDirectChallenges(): Set<number> {
+    return this.directChallenges;
+  }
+
+  setDirectChallenges(directChallenges: Set<number>) {
+    this.directChallenges = directChallenges;
+  }
+
+  getCarType(): string {
+    return this.carType;
+  }
+
+  setCarType(carType: string) {
+    this.carType = carType;
+  }
+
+  getCustomizations(): object {
+    return this.customizations;
+  }
+
+  setCustomizations(customizations: object) {
+    this.customizations = customizations;
+  }
+
+  getCoins(): number {
+    return this.coins;
+  }
+
+  setCoins(coins: number) {
+    this.coins = coins;
   }
 
   updateRank(newRank: string) {
@@ -153,9 +351,7 @@ export class Player {
     if (win) this.totalWins += 1;
   }
 
-  setCarType(type: string) {
-    this.carType = type;
-  }
+
 
   sendChallenge(otherPlayerId: number) {
     this.directChallenges.add(otherPlayerId);
@@ -169,9 +365,7 @@ export class Player {
     this.inventory.push(item);
   }
 
-  setPreferredCar(car: string) {
-    this.preferredCar = car;
-  }
+
 
   updateSettings(newSettings: object) {
     this.settings = { ...this.settings, ...newSettings };
