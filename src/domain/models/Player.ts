@@ -1,5 +1,5 @@
 export class Player {
-  private id: number;
+  private id: string;
   private username: string;
   private email: string;
   private avatarUrl: string;
@@ -26,7 +26,7 @@ export class Player {
   private coins: number;
 
   constructor(
-    id: number,
+    id: string,
     username: string,
     email: string,
     avatarUrl: string,

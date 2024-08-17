@@ -1,28 +1,25 @@
-import { authenticateUser } from "./adapters/in/http/controllers/AuthController";
-import { router } from "@/adapters/in/http/routes/router";
+import router from "@/adapters/in/http/routes/router";
 
 import express from "express";
-const cors = require("cors");
+import cors from "cors";
 
-// const dotenv = require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 const port = process.env.PORT;
 
 class App {
   public server: express.Application;
 
-  private routes() {
-    this.server.use("/api", router);
-  }
-
   constructor() {
     this.server = express();
     this.server.use(cors());
+    this.routes();
     this.middleware();
     this.routes();
   }
 
-  private router() {
-    this.server.use("/api");
+  private routes() {
+    this.server.use("/api", router);
   }
 
   private middleware() {
