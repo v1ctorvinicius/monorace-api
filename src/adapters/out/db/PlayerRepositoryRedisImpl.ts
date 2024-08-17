@@ -1,30 +1,58 @@
-import Redis from "ioredis"
+// TODO: test this
 
-const client = new Redis("rediss://default:AekxAAIjcDEzOTRhYTYxMjMyNDA0OGU1OTBlOTU3MGY5NWFmMmZkNHAxMA@primary-terrier-59697.upstash.io:6379");
-const coiso = await client.set('foo', 'bar');
+import { Player } from "@/domain/models/Player";
+import Redis from "ioredis";
+import dotenv from "dotenv";
 
+dotenv.config();
+const client = new Redis(process.env.UPSTASH_REDIS_URL!);
 
-
-
-
-// import { Redis } from "@upstash/redis";
-// import dotenv from "dotenv";
-
-// import fetch from "node-fetch";
-// dotenv.config();
-
-// const upstashRedisConnection = new Redis({
-//   url: process.env.UPSTASH_REDIS_REST_URL,
-//   token: process.env.UPSTASH_REDIS_REST_TOKEN,
-// });
-
-// const client = upstashRedisConnection;
-
-export async function findPlayerById(id: string): Promise<any | null> {
-//   const response = await client.set("foo", "bar");
-//   // const response = await client.hgetall(`player:${id}`);
-//   console.log("response: ", response);
-//   return response;
+export async function findPlayerById(id: string): Promise<Player | null> {
+  const response = await getPlayerData(id);
+  console.log("response: ", response);
+  return parsePlayerData(response);
 }
 
 export function findPlayerByEmail(email: string) {}
+
+async function getPlayerData(id: string) {
+  return await client.hgetall(`player:${id}`);
+}
+
+function parsePlayerData(response: any): Player {
+  return new Player(
+    response.id,
+    response.username,
+    response.email,
+    response.avatarUrl,
+    response.rank,
+    parseInt(response.level),
+    parseInt(response.experience),
+    parseInt(response.score),
+    response.trophies ? response.trophies.split(",") : [],
+    parseInt(response.completedRaces),
+    response.achievements ? response.achievements.split(",") : [],
+    response.inventory ? JSON.parse(response.inventory) : [],
+    response.preferredCar,
+    response.settings ? JSON.parse(response.settings) : {},
+    response.eventsParticipated
+      ? new Set(response.eventsParticipated.split(","))
+      : new Set(),
+    response.friends
+      ? new Set(response.friends.split(",").map(Number))
+      : new Set(),
+    response.currentRace,
+    response.bestLapTime ? parseFloat(response.bestLapTime) : null,
+    parseInt(response.totalRaces),
+    parseInt(response.totalWins),
+    response.currentEvents
+      ? new Set(response.currentEvents.split(",").map(Number))
+      : new Set(),
+    response.directChallenges
+      ? new Set(response.directChallenges.split(",").map(Number))
+      : new Set(),
+    response.carType,
+    response.customizations ? JSON.parse(response.customizations) : {},
+    parseInt(response.coins)
+  );
+}

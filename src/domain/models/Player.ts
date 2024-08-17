@@ -30,32 +30,83 @@ export class Player {
     username: string,
     email: string,
     avatarUrl: string,
-    carType: string
+    rank: string,
+    level: number,
+    experience: number,
+    score: number,
+    trophies: string[],
+    completedRaces: number,
+    achievements: string[],
+    inventory: object[],
+    preferredCar: string,
+    settings: object,
+    eventsParticipated: Set<string>,
+    friends: Set<number>,
+    currentRace: string,
+    bestLapTime: number | null,
+    totalRaces: number,
+    totalWins: number,
+    currentEvents: Set<number>,
+    directChallenges: Set<number>,
+    carType: string,
+    customizations: object,
+    coins: number
   ) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.avatarUrl = avatarUrl;
-    this.rank = "Novice";
-    this.level = 1;
-    this.experience = 0;
-    this.score = 0;
-    this.trophies = [];
-    this.completedRaces = 0;
-    this.achievements = [];
-    this.inventory = [];
-    this.preferredCar = "";
-    this.settings = {};
-    this.eventsParticipated = new Set();
-    this.friends = new Set();
-    this.bestLapTime = null;
-    this.totalRaces = 0;
-    this.totalWins = 0;
-    this.currentEvents = new Set();
-    this.directChallenges = new Set();
+    this.rank = rank;
+    this.level = level;
+    this.experience = experience;
+    this.score = score;
+    this.trophies = trophies;
+    this.completedRaces = completedRaces;
+    this.achievements = achievements;
+    this.inventory = inventory;
+    this.preferredCar = preferredCar;
+    this.settings = settings;
+    this.eventsParticipated = eventsParticipated;
+    this.friends = friends;
+    this.currentRace = currentRace;
+    this.bestLapTime = bestLapTime;
+    this.totalRaces = totalRaces;
+    this.totalWins = totalWins;
+    this.currentEvents = currentEvents;
+    this.directChallenges = directChallenges;
     this.carType = carType;
-    this.customizations = {};
-    this.coins = 0;
+    this.customizations = customizations;
+    this.coins = coins;
+  }
+
+  static create(username: string, email: string) {
+    return new Player(
+      "no-id", // id
+      username, // username
+      email, // email
+      "no avatar", // avatarUrl
+      "noCarType", // rank
+      0, // level
+      0, // experience
+      0, // score
+      [], // trophies
+      0, // completedRaces
+      [], // achievements
+      [], // inventory
+      "no preferred car", // preferredCar
+      {}, // settings
+      new Set(), // eventsParticipated
+      new Set(), // friends
+      "no current race", // currentRace
+      null, // bestLapTime
+      0, // totalRaces
+      0, // totalWins
+      new Set(), // currentEvents
+      new Set(), // directChallenges
+      "no car type", // carType
+      {}, // customizations
+      0 // coins
+    );
   }
 
   updateRank(newRank: string) {
@@ -139,13 +190,9 @@ export class Player {
     }
   }
 
-  saveProgress() {
-    // Implementar lógica para salvar progresso no banco de dados ou servidor
-  }
+  saveProgress() {}
 
-  loadProgress() {
-    // Implementar lógica para carregar progresso do banco de dados ou servidor
-  }
+  loadProgress() {}
 
   getProfile() {
     return {

@@ -9,7 +9,7 @@ import {
 export async function getPlayerByIdService(id: string): Promise<Player> {
   const player = await findPlayerById(id)
     .then((response) => {
-      console.log("response: ", response);
+      // console.log("response: ", response);
       return response;
     })
     .catch((err) => {

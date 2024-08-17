@@ -12,7 +12,6 @@ const getPlayerByIdServiceExecute: PlayerUC["getPlayerById"] =
 export async function getPlayerById(req: Request, res: Response) {
   const playerId = req.params.id;
   try {
-    console.log("controller");
     try {
       const player = await getPlayerByIdServiceExecute(playerId);
       res.status(200).json(player);
