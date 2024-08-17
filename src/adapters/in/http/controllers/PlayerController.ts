@@ -1,21 +1,11 @@
+import PlayerUC from "@/domain/ports/in/PlayerUC";
 import { Request, Response } from "express";
 
-class PlayerController {
-  public static instance: PlayerController;
+import PlayerService from "@/domain/services/PlayerService";
+const playerUC: PlayerUC = new PlayerService();
 
-  public async getPlayers(req: Request, res: Response) {
-    playerService.getPlayers().then((data) => {
-      res.json(data);
-    });
-  }
-
-  public static getInstance(): PlayerController {
-    if (!PlayerController.instance) {
-      PlayerController.instance = new PlayerController();
-    }
-    return PlayerController.instance;
-  }
-  private constructor() {}
+export async function getPlayerById(req: Request, res: Response) {
+  const playerId = req.params.id;
+  const player = await playerUC.getPlayerByEmail(playerId);
+  res.status(200).json({ message: "get player by id" });
 }
-
-export const playerController = PlayerController.getInstance();

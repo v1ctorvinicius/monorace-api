@@ -1,4 +1,5 @@
 import { authenticateUser } from "./adapters/in/http/controllers/AuthController";
+import { router } from "@/adapters/in/http/routes/router";
 
 import express from "express";
 const cors = require("cors");
@@ -10,7 +11,7 @@ class App {
   public server: express.Application;
 
   private routes() {
-    this.server.get("/login", authenticateUser);
+    this.server.use("/api", router);
   }
 
   constructor() {
@@ -18,6 +19,10 @@ class App {
     this.server.use(cors());
     this.middleware();
     this.routes();
+  }
+
+  private router() {
+    this.server.use("/api");
   }
 
   private middleware() {

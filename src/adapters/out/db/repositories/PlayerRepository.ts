@@ -1,4 +1,4 @@
-import Player from "../model/Player";
+import { Player } from "@/domain/models/Player";
 
 class PlayerRepository {
   private static instance: PlayerRepository;
