@@ -8,10 +8,7 @@ import {
 } from "@/adapters/out/db/PlayerRepositoryRedisImpl";
 
 export async function getPlayerByIdService(id: string): Promise<Player | null> {
-  const player = await findPlayerById(id);
-  console.log("player: ", player);
-  
-  return player;
+  return await findPlayerById(id);
 }
 
 export function getPlayerByEmailService(email: string): Player {
@@ -23,8 +20,12 @@ export async function createPlayerService(
 ): Promise<Player | null> {
   const player = Player.create(request.username, request.email);
   if (!player) return null;
-  const newPlayer = await createPlayer(player);
-  return newPlayer;
+
+  // if (await findPlayerByEmail(player.getEmail())) {
+  //   throw new Error("Player already exists");
+  // }
+
+  return await createPlayer(player);
 }
 
 class PlayerServices implements PlayerUC {

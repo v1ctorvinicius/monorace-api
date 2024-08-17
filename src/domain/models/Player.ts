@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export class Player {
   private id: string;
@@ -351,8 +351,6 @@ export class Player {
     if (win) this.totalWins += 1;
   }
 
-
-
   sendChallenge(otherPlayerId: number) {
     this.directChallenges.add(otherPlayerId);
   }
@@ -364,8 +362,6 @@ export class Player {
   addItemToInventory(item: object) {
     this.inventory.push(item);
   }
-
-
 
   updateSettings(newSettings: object) {
     this.settings = { ...this.settings, ...newSettings };

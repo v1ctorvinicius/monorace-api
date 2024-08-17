@@ -17,9 +17,8 @@ export async function findPlayerById(id: string): Promise<Player | null> {
 export async function findPlayerByEmail(email: string) {}
 
 export async function createPlayer(player: Player): Promise<Player | null> {
-  const request = parseModelToRequest(player);
-  const response = await client.hset(`player:${player.getId()}`, request);
-  console.log("response", response);
+  const requestBody = parseModelToRequest(player);
+  client.hset(`player:${player.getId()}`, requestBody);
   return findPlayerById(player.getId());
 }
 
