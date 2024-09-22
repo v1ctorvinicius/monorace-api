@@ -2,12 +2,16 @@
 // TODO: implement player repository interface
 
 import { Player } from "@/domain/models/Player";
-import Redis from "ioredis";
+import { Redis } from "@upstash/redis";
 import dotenv from "dotenv";
 import PlayerRepository from "@/domain/repositories/PlayerRepository";
 
 dotenv.config();
-const client = new Redis(process.env.UPSTASH_REDIS_URL!);
+
+const client = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 export class PlayerRepositoryRedisImpl implements PlayerRepository {
   async findPlayerByEmail(email: string): Promise<Player | null> {
