@@ -1,10 +1,8 @@
-import { Router } from "express";
-import { getPlayerById, getPlayerByEmail, createPlayer } from "../controllers/PlayerController";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import PlayerController from "@/adapters/in/http/controllers/PlayerController";
 
-const router = Router();
-
-router.get("/players/:id", (req, res) => getPlayerById(req, res));
-router.get("/players/email/:email", (req, res) => getPlayerByEmail(req, res));
-router.post("/players", (req, res) => createPlayer(req, res));
-
-export default router;
+export default async function router(fastify: FastifyInstance) {
+  fastify.get("/players/:id", (req, res) => PlayerController.getPlayerById(req, res));
+  fastify.get("/players/email/:email", (req, res) => PlayerController.getPlayerByEmail(req, res));
+  fastify.post("/players", (req, res) => PlayerController.createPlayer(req, res));
+}

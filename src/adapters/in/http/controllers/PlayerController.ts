@@ -1,41 +1,47 @@
 import PlayerUC from "@/domain/ports/in/PlayerUC";
 import { PlayerServices } from "@/domain/services/PlayerServices";
-import { Request, Response } from "express";
+import { FastifyRequest, FastifyReply } from "fastify";
 
-const playerUC: PlayerUC = new PlayerServices();
+class PlayerController {
+  private playerUC: PlayerUC;
 
-export async function getPlayerById(req: Request, res: Response) {
-  const playerId = req.params.id;
-  try {
-    try {
-      const player = await playerUC.getPlayerById(playerId);
-      res.status(200).json(player);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+  constructor() {
+    this.playerUC = new PlayerServices();
+  }
+
+  public async getPlayerById(req: FastifyRequest, res: FastifyReply) {
+    const playerId = req.params.id;
+
+    res.send("Get player by id " + playerId);
+    // const playerId = req.params.id;
+    // try {
+    //   const player = await this.playerUC.getPlayerById(playerId);
+    //   res.status(200).send(player);
+    // } catch (error) {
+    //   res.status(500).send({ error: "Internal Server Error" });
+    // }
+  }
+
+  public async getPlayerByEmail(req: FastifyRequest, res: FastifyReply) {
+    // const email = req.query.email as string; // Cast para string, já que query pode ser string ou undefined
+    // try {
+    //   const player = await this.playerUC.getPlayerByEmail(email);
+    //   res.status(200).send(player);
+    // } catch (error) {
+    //   res.status(500).send({ error: "Internal Server Error" });
+    // }
+  }
+
+  public async createPlayer(req: FastifyRequest, res: FastifyReply) {
+    // const request = req.body;
+    // try {
+    //   const player = await this.playerUC.createPlayer(request);
+    //   res.status(201).send(player);
+    // } catch (error) {
+    //   console.error("error: ", error);
+    //   res.status(500).send({ error: "Internal Error" });
+    // }
   }
 }
 
-export async function getPlayerByEmail(req: Request, res: Response) {
-  const email = req.query.email;
-
-  try {
-    const player = await playerUC.getPlayerByEmail(email);
-    res.status(200).json(player);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-
-export async function createPlayer(req: Request, res: Response) {
-  const request = req.body;
-  try {
-    const player = await playerUC.createPlayer(request);
-    res.status(201).json(player);
-  } catch (error) {
-    console.error("error: ", error);
-    res.status(500).json({ error: "Internal Error" });
-  }
-}
+export default new PlayerController();

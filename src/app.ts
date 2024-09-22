@@ -1,31 +1,36 @@
-import router from "@/adapters/in/http/routes/router";
-
-import express from "express";
-import cors from "cors";
-
+import Fastify from "fastify";
+import cors from "@fastify/cors";
 import dotenv from "dotenv";
+import router from "./adapters/in/http/routes/router";
+
 dotenv.config();
-const port = process.env.PORT;
 
-class App {
-  public server: express.Application;
+const fastify = Fastify({ logger: true });
+const port = Number(process.env.PORT);
 
-  constructor() {
-    this.server = express();
-    this.server.use(cors());
-    this.middleware();
-    this.routes();
-  }
+function routes() {
+  fastify.register(router, { prefix: "/api" });
+}
 
-  private routes() {
-    this.server.use("/api", router);
-  }
+function middleware() {
+  fastify.register(cors);
 
-  private middleware() {
-    this.server.use(express.json());
+  fastify.addHook("preHandler", async (request, reply) => {
+    // Você pode adicionar hooks de middleware aqui
+  });
+}
+
+async function startApp() {
+  middleware();
+  routes();
+
+  try {
+    await fastify.listen({ port });
+    fastify.log.info(`Server running on port ${port}`);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
   }
 }
 
-const app = new App().server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+startApp();

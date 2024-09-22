@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+// import { Request, Response } from "express";
 
-export const authenticateUser = (req: Request, res: Response):void =>{
+// export const authenticateUser = (req: Request, res: Response):void =>{
   
-  res.send('User authenticated');
-}
+//   res.send('User authenticated');
+// }
