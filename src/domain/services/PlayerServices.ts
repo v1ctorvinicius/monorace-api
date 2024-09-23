@@ -10,17 +10,22 @@ export class PlayerServices implements PlayerUC {
     return await playerRepository.findPlayerById(playerId);
   }
 
-  async getPlayerByEmail(email: string): Promise<Player> {
-    throw new Error("not implemented");
+  async getPlayerIdByEmail(email: string): Promise<string | null> {
+    return await playerRepository.findPlayerIdByEmail(email);
   }
 
-  async createPlayer(request: any): Promise<Player | null> {
-    const player = Player.create(request.username, request.email);
-    if (!player) return null;
+  async signUpPlayer(request: any): Promise<Player | null> {
+    const player = Player.create(
+      request.username,
+      request.password,
+      request.email
+    );
 
-    // if (await findPlayerByEmail(player.getEmail())) {
-    //   throw new Error("Player already exists");
-    // }
+    if (!player) return null;   
+
+    if (await playerRepository.findPlayerIdByEmail(player.getEmail())) {
+      throw new Error("Sorry, email already in use");
+    }
 
     return await playerRepository.createPlayer(player);
   }

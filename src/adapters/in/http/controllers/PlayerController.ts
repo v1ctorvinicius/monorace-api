@@ -1,8 +1,9 @@
+import { Player } from "@/domain/models/Player";
 import PlayerUC from "@/domain/ports/in/PlayerUC";
 import { PlayerServices } from "@/domain/services/PlayerServices";
 import { FastifyRequest, FastifyReply } from "fastify";
 
-class PlayerController {
+export default class PlayerController {
   private playerUC: PlayerUC;
 
   constructor() {
@@ -10,9 +11,6 @@ class PlayerController {
   }
 
   public async getPlayerById(req: FastifyRequest, res: FastifyReply) {
-    const playerId = req.params.id;
-
-    res.send("Get player by id " + playerId);
     // const playerId = req.params.id;
     // try {
     //   const player = await this.playerUC.getPlayerById(playerId);
@@ -22,26 +20,54 @@ class PlayerController {
     // }
   }
 
-  public async getPlayerByEmail(req: FastifyRequest, res: FastifyReply) {
-    // const email = req.query.email as string; // Cast para string, já que query pode ser string ou undefined
-    // try {
-    //   const player = await this.playerUC.getPlayerByEmail(email);
-    //   res.status(200).send(player);
-    // } catch (error) {
-    //   res.status(500).send({ error: "Internal Server Error" });
-    // }
+  public async getPlayerIdByEmail(req: FastifyRequest, res: FastifyReply) {
+    const { email } = req.query as GetPlayerByEmailRequest;
+
+    try {
+      const playerId = await this.playerUC.getPlayerIdByEmail(email);
+      res.status(200).send(playerId);
+    } catch (error) {
+      res.status(500).send({ error: "Internal Server Error" });
+    }
   }
 
-  public async createPlayer(req: FastifyRequest, res: FastifyReply) {
-    // const request = req.body;
-    // try {
-    //   const player = await this.playerUC.createPlayer(request);
-    //   res.status(201).send(player);
-    // } catch (error) {
-    //   console.error("error: ", error);
-    //   res.status(500).send({ error: "Internal Error" });
-    // }
+  public async signUpPlayer(req: FastifyRequest, res: FastifyReply) {
+    try {
+      const { newUsername, newEmail, newPassword } =
+        req.body as SignUpPlayerRequest;
+      const signUpPlayerRequest = Player.create(
+        newUsername,
+        newPassword,
+        newEmail
+      );
+
+      const signUpPlayerResponse = await this.playerUC.signUpPlayer(
+        signUpPlayerRequest
+      );
+
+      if (signUpPlayerResponse === null) {
+        res.status(409).send("Sorry, email already in use");
+        return;
+      }
+
+      res.status(201).send(`Welcome, ${signUpPlayerResponse?.getUsername()} !`);
+    } catch (error: any) {  
+      if (error.message === "Sorry, email already in use") {
+        res.status(409).send(error.message);  
+      } else {
+        console.error("error: ", error);
+        res.status(500).send({ error: "Internal Error" });
+      }
+    }
   }
 }
 
-export default new PlayerController();
+interface SignUpPlayerRequest {
+  newUsername: string;
+  newEmail: string;
+  newPassword: string;
+}
+
+interface GetPlayerByEmailRequest {
+  email: string;
+}

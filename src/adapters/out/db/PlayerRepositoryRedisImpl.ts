@@ -14,64 +14,76 @@ const client = new Redis({
 });
 
 export class PlayerRepositoryRedisImpl implements PlayerRepository {
-  async findPlayerByEmail(email: string): Promise<Player | null> {
+
+  async findPlayerIdByEmail(email: string): Promise<string | null> {
     const response = await client.hgetall(`player:email:${email}`);
-    return PlayerRepositoryRedisImpl.parseResponseToModel(response);
+    return response?.id as string;
   }
 
   async findPlayerById(id: string): Promise<Player | null> {
     const response = await client.hgetall(`player:${id}`);
-    return PlayerRepositoryRedisImpl.parseResponseToModel(response);
+    return this.parseResponseToModel(response);
   }
 
   async createPlayer(player: Player): Promise<Player | null> {
-    const requestBody = PlayerRepositoryRedisImpl.parseModelToRequest(player);
-    await client.hset(`player:${player.getId()}`, requestBody);
-    return this.findPlayerById(player.getId());
+    const newPlayerRequest = this.parseModelToRequest(player);
+    await client.hset(`player:${player.getId()}`, newPlayerRequest);
+    await client.hset(`player:email:${player.getEmail()}`, {
+      id: newPlayerRequest.id,
+    });
+    return await this.findPlayerById(player.getId());
   }
 
-  private static parseResponseToModel(response: any): Player {
+  private parseResponseToModel(response: any): Player {
     return new Player(
       response.id,
       response.username,
+      response.password,
       response.email,
       response.avatarUrl,
       response.rank,
       parseInt(response.level),
       parseInt(response.experience),
       parseInt(response.score),
-      response.trophies ? response.trophies.split(",") : [],
+      response.trophies && response.trophies.length > 0
+        ? response.trophies.split(",")
+        : [],
       parseInt(response.completedRaces),
-      response.achievements ? response.achievements.split(",") : [],
-      response.inventory ? JSON.parse(response.inventory) : [],
+      response.achievements && response.achievements.length > 0
+        ? response.achievements.split(",")
+        : [],
+      Array.isArray(response.inventory) ? response.inventory : [],
       response.preferredCar,
-      response.settings ? JSON.parse(response.settings) : {},
-      response.eventsParticipated
+      typeof response.settings === "object" ? response.settings : {},
+      response.eventsParticipated && response.eventsParticipated.length > 0
         ? new Set(response.eventsParticipated.split(","))
         : new Set(),
-      response.friends
+      response.friends && response.friends.length > 0
         ? new Set(response.friends.split(",").map(Number))
         : new Set(),
       response.currentRace,
       response.bestLapTime ? parseFloat(response.bestLapTime) : null,
       parseInt(response.totalRaces),
       parseInt(response.totalWins),
-      response.currentEvents
+      response.currentEvents && response.currentEvents.length > 0
         ? new Set(response.currentEvents.split(",").map(Number))
         : new Set(),
-      response.directChallenges
+      response.directChallenges && response.directChallenges.length > 0
         ? new Set(response.directChallenges.split(",").map(Number))
         : new Set(),
       response.carType,
-      response.customizations ? JSON.parse(response.customizations) : {},
+      typeof response.customizations === "object"
+        ? response.customizations
+        : {},
       parseInt(response.coins)
     );
   }
 
-  private static parseModelToRequest(player: Player): any {
+  private parseModelToRequest(player: Player): any {
     return {
       id: player.getId(),
       username: player.getUsername() || "",
+      password: player.getPassword() || "",
       email: player.getEmail() || "",
       avatarUrl: player.getAvatarUrl() || "",
       rank: player.getRank() || "",

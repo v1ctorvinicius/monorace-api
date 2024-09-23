@@ -1,10 +1,10 @@
 import { Player } from "@/domain/models/Player";
 
 export default interface PlayerUC {
-  createPlayer(player: Player): Promise<Player | null>;
+  signUpPlayer(player: Player): Promise<Player | null>;
   getPlayerById(playerId: string): Promise<Player | null>;
-  getPlayerByUsername(username: string): Promise<Player>;
-  getPlayerByEmail(email: string): Promise<Player>;
+  getPlayerByUsername(username: string): Promise<Player | null>;
+  getPlayerIdByEmail(email: string): Promise<string | null>;
   getPlayerStatisticsById(playerId: string): Promise<string>;
   getLeaderboard(raceId: string): Promise<any>;
   getEventLeaderboard(eventId: string): Promise<any>;
