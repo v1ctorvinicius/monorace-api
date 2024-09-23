@@ -1,8 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export class Player {
   private id: string;
   private username: string;
+  private password: string;
   private email: string;
   private avatarUrl: string;
   private rank: string;
@@ -30,6 +31,7 @@ export class Player {
   constructor(
     id: string,
     username: string,
+    password: string,
     email: string,
     avatarUrl: string,
     rank: string,
@@ -56,6 +58,7 @@ export class Player {
   ) {
     this.id = id;
     this.username = username;
+    this.password = password;
     this.email = email;
     this.avatarUrl = avatarUrl;
     this.rank = rank;
@@ -81,10 +84,11 @@ export class Player {
     this.coins = coins;
   }
 
-  static create(username: string, email: string) {
+  static create(username: string, password: string, email: string) {
     return new Player(
       uuidv4(), // id gerado automaticamente
       username, // username
+      password, // password
       email, // email
       "no avatar", // avatarUrl
       "noCarType", // rank
@@ -121,6 +125,14 @@ export class Player {
 
   setUsername(username: string) {
     this.username = username;
+  }
+
+  getPassword(): string {
+    return this.password;
+  }
+
+  setPassword(password: string) {
+    throw new Error("Method not implemented.");
   }
 
   getEmail(): string {
@@ -351,8 +363,6 @@ export class Player {
     if (win) this.totalWins += 1;
   }
 
-
-
   sendChallenge(otherPlayerId: number) {
     this.directChallenges.add(otherPlayerId);
   }
@@ -364,8 +374,6 @@ export class Player {
   addItemToInventory(item: object) {
     this.inventory.push(item);
   }
-
-
 
   updateSettings(newSettings: object) {
     this.settings = { ...this.settings, ...newSettings };
