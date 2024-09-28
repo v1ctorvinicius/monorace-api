@@ -32,3 +32,11 @@ tsconfig.*.json
 *.swo
 
 readme.md
+
+# Build files
+/dist
+/build
+*.js
+
+
+
