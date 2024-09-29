@@ -23,12 +23,16 @@ Thumbs.db
 # Jest test coverage
 coverage/
 
-# TypeScript configuration
-tsconfig.json
-tsconfig.*.json
-
 # Editor-specific files
 *.swp
 *.swo
 
 readme.md
+
+# Build files
+/dist
+/build
+*.js
+
+
+

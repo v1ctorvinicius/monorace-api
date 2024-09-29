@@ -1,43 +1,36 @@
+import { PlayerRepositoryRedisImpl } from "@/adapters/out/db/PlayerRepositoryRedisImpl";
 import PlayerUC from "@/domain/ports/in/PlayerUC";
 import { Player } from "../models/Player";
 import PlayerRepository from "../repositories/PlayerRepository";
-import {
-  findPlayerById,
-  findPlayerByEmail,
-  createPlayer,
-} from "@/adapters/out/db/PlayerRepositoryRedisImpl";
 
-export async function getPlayerByIdService(id: string): Promise<Player | null> {
-  const player = await findPlayerById(id);
-  console.log("player: ", player);
-  
-  return player;
-}
+const playerRepository: PlayerRepository = new PlayerRepositoryRedisImpl();
 
-export function getPlayerByEmailService(email: string): Player {
-  throw new Error("not implemented");
-}
-
-export async function createPlayerService(
-  request: any
-): Promise<Player | null> {
-  const player = Player.create(request.username, request.email);
-  if (!player) return null;
-  const newPlayer = await createPlayer(player);
-  return newPlayer;
-}
-
-class PlayerServices implements PlayerUC {
-  createPlayer(player: Player): Promise<Player> {
-    throw new Error("Method not implemented.");
+export class PlayerServices implements PlayerUC {
+  async getPlayerById(playerId: string): Promise<Player | null> {
+    return await playerRepository.findPlayerById(playerId);
   }
-  getPlayerById(playerId: string): Promise<Player> {
-    throw new Error("Method not implemented.");
+
+  async getPlayerIdByEmail(email: string): Promise<string | null> {
+    return await playerRepository.findPlayerIdByEmail(email);
   }
+
+  async signUpPlayer(request: any): Promise<Player | null> {
+    const player = Player.create(
+      request.username,
+      request.password,
+      request.email
+    );
+
+    if (!player) return null;   
+
+    if (await playerRepository.findPlayerIdByEmail(player.getEmail())) {
+      throw new Error("Sorry, email already in use");
+    }
+
+    return await playerRepository.createPlayer(player);
+  }
+
   getPlayerByUsername(username: string): Promise<Player> {
-    throw new Error("Method not implemented.");
-  }
-  getPlayerByEmail(email: string): Promise<Player> {
     throw new Error("Method not implemented.");
   }
   getPlayerStatisticsById(playerId: string): Promise<string> {

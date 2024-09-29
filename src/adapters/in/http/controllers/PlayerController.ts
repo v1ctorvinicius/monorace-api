@@ -1,47 +1,73 @@
+import { Player } from "@/domain/models/Player";
 import PlayerUC from "@/domain/ports/in/PlayerUC";
-import {
-  getPlayerByIdService,
-  getPlayerByEmailService,
-  createPlayerService,
-} from "@/domain/services/PlayerServices";
-import { Request, Response } from "express";
+import { PlayerServices } from "@/domain/services/PlayerServices";
+import { FastifyRequest, FastifyReply } from "fastify";
 
-// Definindo explicitamente o tipo da constante
-const getPlayerByIdServiceExecute: PlayerUC["getPlayerById"] =
-  getPlayerByIdService;
+export default class PlayerController {
+  private playerUC: PlayerUC;
 
-export async function getPlayerById(req: Request, res: Response) {
-  const playerId = req.params.id;
-  try {
+  constructor() {
+    this.playerUC = new PlayerServices();
+  }
+
+  public async getPlayerById(req: FastifyRequest, res: FastifyReply) {
+    // const playerId = req.params.id;
+    // try {
+    //   const player = await this.playerUC.getPlayerById(playerId);
+    //   res.status(200).send(player);
+    // } catch (error) {
+    //   res.status(500).send({ error: "Internal Server Error" });
+    // }
+  }
+
+  public async getPlayerIdByEmail(req: FastifyRequest, res: FastifyReply) {
+    const { email } = req.query as GetPlayerByEmailRequest;
+
     try {
-      const player = await getPlayerByIdServiceExecute(playerId);
-      res.status(200).json(player);
+      const playerId = await this.playerUC.getPlayerIdByEmail(email);
+      res.status(200).send(playerId);
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).send({ error: "Internal Server Error" });
     }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+  }
+
+  public async signUpPlayer(req: FastifyRequest, res: FastifyReply) {
+    try {
+      const { newUsername, newEmail, newPassword } =
+        req.body as SignUpPlayerRequest;
+      const signUpPlayerRequest = Player.create(
+        newUsername,
+        newPassword,
+        newEmail
+      );
+
+      const signUpPlayerResponse = await this.playerUC.signUpPlayer(
+        signUpPlayerRequest
+      );
+
+      if (signUpPlayerResponse === null) {
+        res.status(409).send("Sorry, email already in use");
+        return;
+      }
+
+      res.status(201).send(`Welcome, ${signUpPlayerResponse?.getUsername()} !`);
+    } catch (error: any) {  
+      if (error.message === "Sorry, email already in use") {
+        res.status(409).send(error.message);  
+      } else {
+        console.error("error: ", error);
+        res.status(500).send({ error: "Internal Error" });
+      }
+    }
   }
 }
 
-export async function getPlayerByEmail(req: Request, res: Response) {
-  const email = req.params.email;
-
-  try {
-    const player = await getPlayerByEmailService(email);
-    res.status(200).json(player);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+interface SignUpPlayerRequest {
+  newUsername: string;
+  newEmail: string;
+  newPassword: string;
 }
 
-export async function createPlayer(req: Request, res: Response) {
-  const request = req.body;
-  try {
-    const player = await createPlayerService(request);
-    res.status(201).json(player);
-  } catch (error) {
-    console.error("error: ", error);
-    res.status(500).json({ error: "Internal Error" });
-  }
+interface GetPlayerByEmailRequest {
+  email: string;
 }
