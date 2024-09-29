@@ -21,7 +21,7 @@ export default class PlayerController {
   }
 
   public async getPlayerIdByEmail(req: FastifyRequest, res: FastifyReply) {
-    const { email } = req.query as GetPlayerByEmailRequest;
+    const { email } = req.query as PlayerGetByEmailRequest;
 
     try {
       const playerId = await this.playerUC.getPlayerIdByEmail(email);
@@ -34,14 +34,14 @@ export default class PlayerController {
   public async signUpPlayer(req: FastifyRequest, res: FastifyReply) {
     try {
       const { newUsername, newEmail, newPassword } =
-        req.body as SignUpPlayerRequest;
+        req.body as PlayerSignUpRequest;
       const signUpPlayerRequest = Player.create(
         newUsername,
         newPassword,
         newEmail
       );
 
-      const signUpPlayerResponse = await this.playerUC.signUpPlayer(
+      const signUpPlayerResponse = await this.playerUC.playerSignUp(
         signUpPlayerRequest
       );
 
@@ -51,9 +51,9 @@ export default class PlayerController {
       }
 
       res.status(201).send(`Welcome, ${signUpPlayerResponse?.getUsername()} !`);
-    } catch (error: any) {  
+    } catch (error: any) {
       if (error.message === "Sorry, email already in use") {
-        res.status(409).send(error.message);  
+        res.status(409).send(error.message);
       } else {
         console.error("error: ", error);
         res.status(500).send({ error: "Internal Error" });
@@ -62,12 +62,17 @@ export default class PlayerController {
   }
 }
 
-interface SignUpPlayerRequest {
+interface PlayerLoginRequest {
+  email: string;
+  password: string;
+}
+
+interface PlayerSignUpRequest {
   newUsername: string;
   newEmail: string;
   newPassword: string;
 }
 
-interface GetPlayerByEmailRequest {
+interface PlayerGetByEmailRequest {
   email: string;
 }

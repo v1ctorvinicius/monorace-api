@@ -1,7 +1,8 @@
 import { Player } from "@/domain/models/Player";
 
 export default interface PlayerUC {
-  signUpPlayer(player: Player): Promise<Player | null>;
+  playerLogin(email: string, password: string): unknown;
+  playerSignUp(player: Player): Promise<Player | null>;
   getPlayerById(playerId: string): Promise<Player | null>;
   getPlayerByUsername(username: string): Promise<Player | null>;
   getPlayerIdByEmail(email: string): Promise<string | null>;
