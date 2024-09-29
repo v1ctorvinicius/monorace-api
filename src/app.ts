@@ -5,7 +5,7 @@ import router from "./adapters/in/http/routes/router";
 
 dotenv.config();
 
-const fastify = Fastify({ logger: false });
+const fastify = Fastify({ logger: true });
 const port = Number(process.env.PORT);
 
 function routes() {
