@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 export class Player {
   private id: string;
   private username: string;
-  private password: string;
+  private passwordHash: string;
   private email: string;
   private avatarUrl: string;
   private rank: string;
@@ -58,7 +58,7 @@ export class Player {
   ) {
     this.id = id;
     this.username = username;
-    this.password = password;
+    this.passwordHash = password;
     this.email = email;
     this.avatarUrl = avatarUrl;
     this.rank = rank;
@@ -127,8 +127,8 @@ export class Player {
     this.username = username;
   }
 
-  getPassword(): string {
-    return this.password;
+  getPasswordHash(): string {
+    return this.passwordHash;
   }
 
   setPassword(password: string) {

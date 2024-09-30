@@ -1,33 +1,54 @@
 import { PlayerRepositoryRedisImpl } from "@/adapters/out/db/PlayerRepositoryRedisImpl";
 import PlayerUC from "@/domain/ports/in/PlayerUC";
 import { Player } from "../models/Player";
-import PlayerRepository from "../repositories/PlayerRepository";
-
-const playerRepository: PlayerRepository = new PlayerRepositoryRedisImpl();
+import PlayerRepository from "../ports/out/PlayerRepository";
+import AuthService from "@/domain/services/AuthService";
 
 export class PlayerServices implements PlayerUC {
+  private playerRepository: PlayerRepository;
+  private authService: AuthService;
+
+  constructor(playerRepository: PlayerRepository, authService: AuthService) {
+    this.playerRepository = playerRepository;
+    this.authService = authService;
+  }
+
   async getPlayerById(playerId: string): Promise<Player | null> {
-    return await playerRepository.findPlayerById(playerId);
+    return await this.playerRepository.findById(playerId);
   }
 
   async getPlayerIdByEmail(email: string): Promise<string | null> {
-    return await playerRepository.findPlayerIdByEmail(email);
+    return await this.playerRepository.findIdByEmail(email);
   }
 
-  async signUpPlayer(request: any): Promise<Player | null> {
+  async playerSignUp(request: any): Promise<Player | null> {
     const player = Player.create(
-      request.username,
-      request.password,
-      request.email
+      request.newUsername,
+      this.authService.hashPassword(request.newPassword),
+      request.newEmail
     );
 
-    if (!player) return null;   
+    if (!player) return null;
 
-    if (await playerRepository.findPlayerIdByEmail(player.getEmail())) {
+    if (await this.playerRepository.findIdByEmail(player.getEmail()))
       throw new Error("Sorry, email already in use");
-    }
 
-    return await playerRepository.createPlayer(player);
+    return await this.playerRepository.create(player);
+  }
+
+  async playerLogin(email: string, password: string): Promise<string | null> {
+    const player = await this.playerRepository.findByEmail(email);
+
+    if (!player) throw new Error("Email not found");
+
+    const isPasswordValid = await this.authService.verifyPassword(
+      password,
+      player.getPasswordHash()
+    );
+    if (!isPasswordValid) return null;
+
+    const token = this.authService.generateToken(player.getId());
+    return token;
   }
 
   getPlayerByUsername(username: string): Promise<Player> {
@@ -76,5 +97,3 @@ export class PlayerServices implements PlayerUC {
     throw new Error("Method not implemented.");
   }
 }
-
-const playerServices = new PlayerServices();

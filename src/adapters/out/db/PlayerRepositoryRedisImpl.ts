@@ -2,9 +2,9 @@
 // TODO: implement player repository interface
 
 import { Player } from "@/domain/models/Player";
+import PlayerRepository from "@/domain/ports/out/PlayerRepository";
 import { Redis } from "@upstash/redis";
 import dotenv from "dotenv";
-import PlayerRepository from "@/domain/repositories/PlayerRepository";
 
 dotenv.config();
 
@@ -14,24 +14,44 @@ const client = new Redis({
 });
 
 export class PlayerRepositoryRedisImpl implements PlayerRepository {
+  async findByEmail(email: string): Promise<Player | null> {
+    const searchByEmailKey = `player:email:${email.trim()}`;
+    const response = await client.hgetall(searchByEmailKey);
+    if (!response || Object.keys(response).length === 0) return null;
+    const player = response.id as string;
+    return await this.findById(player);
+  }
 
-  async findPlayerIdByEmail(email: string): Promise<string | null> {
+  findByName(name: string): Promise<Player[]> {
+    throw new Error("Method not implemented.");
+  }
+  findByTeam(team: string): Promise<Player[]> {
+    throw new Error("Method not implemented.");
+  }
+  findByPosition(position: string): Promise<Player[]> {
+    throw new Error("Method not implemented.");
+  }
+  findByNationality(nationality: string): Promise<Player[]> {
+    throw new Error("Method not implemented.");
+  }
+
+  async findIdByEmail(email: string): Promise<string | null> {
     const response = await client.hgetall(`player:email:${email}`);
     return response?.id as string;
   }
 
-  async findPlayerById(id: string): Promise<Player | null> {
-    const response = await client.hgetall(`player:${id}`);
+  async findById(id: string): Promise<Player | null> {
+    const response = await client.hgetall(`player:id:${id}`);
     return this.parseResponseToModel(response);
   }
 
-  async createPlayer(player: Player): Promise<Player | null> {
+  async create(player: Player): Promise<Player | null> {
     const newPlayerRequest = this.parseModelToRequest(player);
-    await client.hset(`player:${player.getId()}`, newPlayerRequest);
-    await client.hset(`player:email:${player.getEmail()}`, {
-      id: newPlayerRequest.id,
-    });
-    return await this.findPlayerById(player.getId());
+    const idKey = `player:id:${player.getId().trim()}`;
+    const emailKey = `player:email:${player.getEmail().trim()}`;
+    await client.hset(idKey, newPlayerRequest);
+    await client.hset(emailKey, { id: newPlayerRequest.id });
+    return await this.findById(player.getId());
   }
 
   private parseResponseToModel(response: any): Player {
@@ -83,7 +103,7 @@ export class PlayerRepositoryRedisImpl implements PlayerRepository {
     return {
       id: player.getId(),
       username: player.getUsername() || "",
-      password: player.getPassword() || "",
+      password: player.getPasswordHash() || "",
       email: player.getEmail() || "",
       avatarUrl: player.getAvatarUrl() || "",
       rank: player.getRank() || "",

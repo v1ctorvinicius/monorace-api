@@ -6,8 +6,8 @@ import { FastifyRequest, FastifyReply } from "fastify";
 export default class PlayerController {
   private playerUC: PlayerUC;
 
-  constructor() {
-    this.playerUC = new PlayerServices();
+  constructor(playerServices: PlayerServices) {
+    this.playerUC = playerServices;
   }
 
   public async getPlayerById(req: FastifyRequest, res: FastifyReply) {
@@ -21,7 +21,7 @@ export default class PlayerController {
   }
 
   public async getPlayerIdByEmail(req: FastifyRequest, res: FastifyReply) {
-    const { email } = req.query as GetPlayerByEmailRequest;
+    const { email } = req.query as PlayerGetByEmailRequest;
 
     try {
       const playerId = await this.playerUC.getPlayerIdByEmail(email);
@@ -33,41 +33,53 @@ export default class PlayerController {
 
   public async signUpPlayer(req: FastifyRequest, res: FastifyReply) {
     try {
-      const { newUsername, newEmail, newPassword } =
-        req.body as SignUpPlayerRequest;
-      const signUpPlayerRequest = Player.create(
-        newUsername,
-        newPassword,
-        newEmail
+      const playerSignUpRequest = req.body as PlayerSignUpRequest;
+      const playerSignUpResponse = await this.playerUC.playerSignUp(
+        playerSignUpRequest
       );
 
-      const signUpPlayerResponse = await this.playerUC.signUpPlayer(
-        signUpPlayerRequest
-      );
+      if (!playerSignUpResponse) return;
 
-      if (signUpPlayerResponse === null) {
-        res.status(409).send("Sorry, email already in use");
-        return;
-      }
-
-      res.status(201).send(`Welcome, ${signUpPlayerResponse?.getUsername()} !`);
-    } catch (error: any) {  
+      res.status(201).send(`Welcome, ${playerSignUpResponse?.getUsername()} !`);
+    } catch (error: any) {
       if (error.message === "Sorry, email already in use") {
-        res.status(409).send(error.message);  
+        res.status(409).send(error.message);
       } else {
         console.error("error: ", error);
         res.status(500).send({ error: "Internal Error" });
       }
     }
   }
+
+  public async playerLogin(req: FastifyRequest, res: FastifyReply) {
+    try {
+      const playerLoginRequest = req.body as PlayerLoginRequest;
+      const token = await this.playerUC.playerLogin(
+        playerLoginRequest.email,
+        playerLoginRequest.password
+      );
+
+      if (!token) {
+        throw new Error("Invalid credentials");
+      }
+      res.status(200).send(token);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  }
 }
 
-interface SignUpPlayerRequest {
+export interface PlayerSignUpRequest {
   newUsername: string;
   newEmail: string;
   newPassword: string;
 }
 
-interface GetPlayerByEmailRequest {
+interface PlayerGetByEmailRequest {
   email: string;
+}
+
+interface PlayerLoginRequest {
+  email: string;
+  password: string;
 }

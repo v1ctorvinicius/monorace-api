@@ -1,7 +1,9 @@
+import { PlayerSignUpRequest } from "@/adapters/in/http/controllers/PlayerController";
 import { Player } from "@/domain/models/Player";
 
 export default interface PlayerUC {
-  signUpPlayer(player: Player): Promise<Player | null>;
+  playerLogin(email: string, password: string): Promise<string | null>;
+  playerSignUp(request: PlayerSignUpRequest): Promise<Player | null>;
   getPlayerById(playerId: string): Promise<Player | null>;
   getPlayerByUsername(username: string): Promise<Player | null>;
   getPlayerIdByEmail(email: string): Promise<string | null>;
